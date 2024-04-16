@@ -1,43 +1,49 @@
-const box = document.querySelector('#boxes');
-const inputElements = document.querySelector('#number-boxes');
-const createElements = document.querySelector('[data-create]');
-const destroyElements = document.querySelector('[data-destroy]');
-
-createElements.addEventListener('click', () => {
-  const numberOfBoxes = parseInt(inputElements.value);
-  createBoxes(numberOfBoxes);
-});
-
-destroyElements.addEventListener('click', destroyBoxes);
+const inputNum = document.querySelector('#controls input');
+const createBtn = document.querySelector('button[data-create]');
+const destroyBtn = document.querySelector('button[data-destroy]');
+const parentDivElem = document.querySelector('#boxes');
 
 function createBoxes(amount) {
-  box.innerHTML = '';
-  const boxElements = [];
-  let size = 30;
-
-  if (amount < 1 || amount > 100) {
-    alert('Введіть число від 1 до 100');
-    return destroyBoxes();
+  if (amount === '') {
+    parentDivElem.innerHTML = '';
+    return;
+  } else if (amount < 1 || amount > 100) {
+    return;
   }
+
+  parentDivElem.innerHTML = '';
 
   for (let i = 0; i < amount; i++) {
-    const randomColor = getRandomHexColor();
-    boxElements.push(
-      `<div style="width: ${size}px; height: ${size}px; background-color: ${randomColor};"></div>`
-    );
-    size += 10;
+    const newDivElem = document.createElement('div');
+    parentDivElem.append(newDivElem);
+
+    const listOfNewDivElements = parentDivElem.querySelectorAll('div');
+
+    listOfNewDivElements.forEach((childDivElement, i) => {
+      let num = 0;
+
+      if (i === listOfNewDivElements.length - 1) {
+        num = (listOfNewDivElements.length - 1) * 10 + 30;
+
+        childDivElement.style.width = `${num}px`;
+        childDivElement.style.height = `${num}px`;
+        childDivElement.style.backgroundColor = getRandomHexColor();
+      }
+    });
   }
 
-  const result = boxElements.join('');
-
-  box.insertAdjacentHTML('beforeend', result);
-  inputElements.value = '';
+  inputNum.value = '';
 }
 
-function destroyBoxes() {
-  box.innerHTML = '';
-  inputElements.value = '';
-}
+const destroyElem = event => {
+  parentDivElem.innerHTML = '';
+  inputNum.value = '';
+};
+
+createBtn.addEventListener('click', event => {
+  createBoxes(inputNum.value);
+});
+destroyBtn.addEventListener('click', destroyElem);
 
 function getRandomHexColor() {
   return `#${Math.floor(Math.random() * 16777215)
